@@ -1,5 +1,7 @@
 package com.nezuko.data.util
 
+import com.nezuko.data.exceptions.EmptyResultException
+import com.nezuko.data.exceptions.InternetException
 import com.nezuko.data.model.ResultModel
 import io.ktor.client.plugins.ClientRequestException
 import io.ktor.client.plugins.RedirectResponseException
@@ -7,10 +9,6 @@ import io.ktor.client.plugins.ServerResponseException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.TimeoutCancellationException
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
 import java.io.IOException
 
@@ -21,19 +19,18 @@ suspend fun <T> safeRequest(
     try {
         val response = request()
         ResultModel.success(response)
+
+    } catch (e: EmptyResultException) {
+        ResultModel.failure(e)
     } catch (e: Exception) {
         ResultModel.failure(mapError(e))
     }
 }
 
-private fun mapError(e: Throwable): String {
+private fun mapError(e: Throwable): Exception {
     return when (e) {
-        is ClientRequestException -> "Ошибка клиента: ${e.response.status.description}"
-        is ServerResponseException -> "Ошибка сервера: ${e.response.status.description}"
-        is RedirectResponseException -> "Ошибка редиректа: ${e.response.status.description}"
-        is TimeoutCancellationException -> "Превышено время ожидания"
-        is IOException -> "Проблема с подключением к интернету"
-        else -> "Неизвестная ошибка: ${e.localizedMessage ?: "Нет сообщения"}"
+        is IOException, is TimeoutCancellationException, is RedirectResponseException, is ServerResponseException, is ClientRequestException -> InternetException()
+        else -> Exception("Неизвестная ошибка: ${e.localizedMessage ?: "Нет сообщения"}")
     }
 }
 

@@ -1,5 +1,6 @@
 package com.nezuko.details
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,7 +14,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -25,12 +25,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.nezuko.data.model.Character
 import com.nezuko.ui.Image
 
+private val TAG = "DetailsScreen"
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -71,9 +71,7 @@ fun DetailsScreen(
             Column(modifier = Modifier.padding(16.dp)) {
                 InfoRow(label = "Status", value = character.status)
                 InfoRow(label = "Species", value = character.species)
-                if (character.type.isNotBlank()) {
-                    InfoRow(label = "Type", value = character.type)
-                }
+                InfoRow(label = "Type", value = character.type)
                 InfoRow(label = "Gender", value = character.gender)
                 InfoRow(label = "Origin", value = character.origin.name)
                 InfoRow(label = "Location", value = character.location.name)
@@ -88,7 +86,9 @@ fun DetailsScreen(
 
                 Spacer(modifier = Modifier.height(8.dp))
 
+
                 character.episode.forEach { episodeUrl ->
+                    Log.i(TAG, "DetailsScreen: ")
                     Text(
                         text = episodeUrl,
                         style = MaterialTheme.typography.bodySmall,

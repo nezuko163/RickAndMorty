@@ -1,5 +1,6 @@
 package com.nezuko.data.db
 
+import android.graphics.Color
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.nezuko.data.source.LocationInfo

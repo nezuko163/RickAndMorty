@@ -1,5 +1,6 @@
 package com.nezuko.data.repository
 
+import android.R.attr.name
 import android.util.Log
 import com.nezuko.data.db.CharacterDao
 import com.nezuko.data.db.toEntity
@@ -12,6 +13,7 @@ import com.nezuko.data.source.RickAndMortyApi
 import com.nezuko.data.util.networkQueryWithCache
 import com.nezuko.data.util.safeRoomFlow
 import com.nezuko.data.util.safeRoomRequest
+import io.ktor.client.utils.EmptyContent.status
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
@@ -29,8 +31,7 @@ class RickAndMortyRepositoryImpl @Inject constructor(
         type: String?,
         gender: String?
     ): ResultModel<CharacterResponse>  {
-        Log.i(TAG, "getCharacters: asd")
-        val a: ResultModel<CharacterResponse> = networkQueryWithCache(
+        return networkQueryWithCache(
             queryCache = {
                 Log.i(TAG, "getCharacters: queryCache")
                 getCharactersFromCachePage(name, status, species, type, gender, page ?: 1)
@@ -43,10 +44,9 @@ class RickAndMortyRepositoryImpl @Inject constructor(
                 Log.i(TAG, "getCharacters: saveFetch")
                 dao.insertAll(characterResponse.results.map { it.toEntity() })
             }
-        )
-
-        Log.i(TAG, "getCharacters: res - $a")
-        return a
+        ).also {
+            Log.i(TAG, "getCharacters: res - $it")
+        }
     }
 
     override suspend fun getCharacterById(id: Int): Flow<ResultModel<Character>> =

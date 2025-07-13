@@ -17,4 +17,14 @@ data class Character(
     val episode: List<String>,
     val url: String,
     val created: String
-)
+) {
+    val color = when (status.lowercase()) {
+        "alive" -> StatusColor.ALIVE
+        "dead" -> StatusColor.DEAD
+        else -> StatusColor.ELSE
+    }
+
+    enum class StatusColor {
+        ALIVE, DEAD, ELSE
+    }
+}

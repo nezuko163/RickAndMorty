@@ -2,11 +2,15 @@ package com.nezuko.main
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.union
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -24,27 +28,30 @@ import com.nezuko.ui.Spacing
 
 private const val TAG = "MainScreen"
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun MainScreen(
     characters: LazyPagingItems<Character>,
     onCharacterClick: (Int) -> Unit,
     onValueChange: (String) -> Unit,
+    onFilterClick: () -> Unit,
     text: String
 ) {
+
     Scaffold(
+        modifier = Modifier.imePadding(),
         topBar = {
             SearchTextField(
-                modifier = Modifier.statusBarsPadding(),
+                modifier = Modifier,
                 value = text,
                 onValueChange = onValueChange,
-                onFilterClick = {}
+                onFilterClick = onFilterClick
             )
-        }
+        },
+        contentWindowInsets = WindowInsets.safeDrawing.union(WindowInsets.ime),
     ) { padding ->
         CharacterGrid(
-            modifier = Modifier
-                .padding(padding)
-                .fillMaxSize(),
+            modifier = Modifier.padding(padding),
             characters = characters,
             onCardClick = onCharacterClick
         )

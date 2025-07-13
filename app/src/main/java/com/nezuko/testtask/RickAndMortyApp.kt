@@ -2,9 +2,10 @@ package com.nezuko.testtask
 
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -16,6 +17,7 @@ import com.nezuko.main.navigation.mainScreen
 
 private val TAG = "RacingApp"
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun RickAndMortyApp(
     modifier: Modifier = Modifier,
@@ -23,12 +25,12 @@ fun RickAndMortyApp(
     navController: NavHostController = rememberNavController()
 ) {
     NavHost(
-
         popExitTransition = { ExitTransition.None },
         popEnterTransition = { EnterTransition.None },
         enterTransition = { EnterTransition.None },
         exitTransition = { ExitTransition.None },
-        modifier = modifier.fillMaxSize(), navController = navController,
+        modifier = modifier.safeDrawingPadding(),
+        navController = navController,
         startDestination = startDestination
     ) {
         mainScreen(navigateToDetails = navController::navigateToDetails)

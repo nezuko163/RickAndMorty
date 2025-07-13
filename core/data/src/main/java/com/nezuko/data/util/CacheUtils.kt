@@ -1,12 +1,12 @@
 package com.nezuko.data.util
 
+import android.R.id.message
 import android.util.Log
+import com.nezuko.data.exceptions.EmptyResultException
 import com.nezuko.data.model.ResultModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
@@ -20,7 +20,7 @@ suspend fun <T> safeRoomRequest(
         val result = request()
         ResultModel.success(result)
     } catch (e: Exception) {
-        ResultModel.failure("Ошибка чтения из базы данных: ${e.localizedMessage ?: "Неизвестная ошибка"}")
+        ResultModel.failure(RuntimeException("Ошибка чтения из базы данных: ${e.localizedMessage ?: "Неизвестная ошибка"}"))
     }
 }
 
@@ -29,7 +29,7 @@ fun <T> safeRoomFlow(
     request: suspend () -> T
 ): Flow<ResultModel<T>> = flow {
     emit(ResultModel.loading())
-    emit( safeRoomRequest(dispatcher, request))
+    emit(safeRoomRequest(dispatcher, request))
 }.flowOn(dispatcher)
 
 suspend fun <T> networkQueryWithCache(
@@ -59,14 +59,16 @@ suspend fun <T> networkQueryWithCache(
         }
 
         is ResultModel.Failure -> {
+            if (firstResult.e is EmptyResultException) return@withContext firstResult
             val cached = queryCache()
             when (cached) {
                 is ResultModel.Success -> cached
                 is ResultModel.Failure -> {
-                    val message = "${firstResult.message}\n${cached.message}"
+                    val message = "${firstResult.e.message}\n${cached.e.message}"
                     ResultModel.failure(message)
                 }
-                else -> ResultModel.failure(firstResult.message ?: "Неизвестная ошибка")
+
+                else -> ResultModel.failure(firstResult.e.message ?: "Неизвестная ошибка")
             }
         }
 

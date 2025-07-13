@@ -23,7 +23,7 @@ class CharacterPagingSource(
                 }
 
                 is ResultModel.Failure -> {
-                    LoadResult.Error(Exception(result.message ?: "Неизвестная ошибка"))
+                    LoadResult.Error(result.e)
                 }
 
                 is ResultModel.Loading, is ResultModel.None -> {
