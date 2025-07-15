@@ -1,16 +1,18 @@
 package com.nezuko.data.db
 
 import androidx.room.TypeConverter
-import java.time.Instant
 
 class Converters {
-    @TypeConverter
-    fun fromInstant(instant: Instant?): Long? {
-        return instant?.toEpochMilli()
-    }
+    private val SEPARATOR = " "
 
     @TypeConverter
-    fun toInstant(timestamp: Long?): Instant? {
-        return timestamp?.let { Instant.ofEpochMilli(it) }
-    }
+    fun fromStringList(list: List<String>?): String? =
+        list?.joinToString(separator = SEPARATOR)
+
+    @TypeConverter
+    fun toStringList(value: String?): List<String> =
+        value
+            ?.takeIf { it.isNotEmpty() }
+            ?.split(SEPARATOR)
+            ?: emptyList()
 }

@@ -15,5 +15,5 @@ interface RickAndMortyRepository {
         gender: String? = null
     ): ResultModel<CharacterResponse>
 
-    suspend fun getCharacterById(id: Int): Flow<ResultModel<Character>>
+    fun getCharacterById(id: Int): Flow<ResultModel<Character>>
 }

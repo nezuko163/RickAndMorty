@@ -1,10 +1,9 @@
 package com.nezuko.data.db
 
-import android.graphics.Color
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.nezuko.data.source.LocationInfo
 import com.nezuko.data.model.Character
+import com.nezuko.data.source.LocationInfo
 
 @Entity(tableName = "characters")
 data class CharacterEntity(
@@ -21,13 +20,14 @@ data class CharacterEntity(
     val image: String,
     val url: String,
     val created: String,
+    val episode: List<String>,
     val timestamp: Long = System.currentTimeMillis()
 )
 
 fun Character.toEntity() = CharacterEntity(
     id, name, status, species, type, gender,
     origin.name, origin.url, location.name, location.url,
-    image, url, created
+    image, url, created, episode
 )
 
 
@@ -35,5 +35,5 @@ fun CharacterEntity.toModel() = Character(
     id, name, status, species, type, gender,
     LocationInfo(originName, originUrl),
     LocationInfo(locationName, locationUrl),
-    image, listOf(), url, created
+    image, episode, url, created
 )

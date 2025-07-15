@@ -10,12 +10,12 @@ import androidx.paging.cachedIn
 import com.nezuko.data.model.Character
 import com.nezuko.data.repository.RickAndMortyRepository
 import com.nezuko.data.source.CharacterPagingSource
+import com.nezuko.data.source.Translator
+import com.nezuko.data.util.BackArgumentHolder
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
@@ -23,34 +23,17 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val repo: RickAndMortyRepository
+    private val repo: RickAndMortyRepository,
+    private val backArgumentHolder: BackArgumentHolder,
+    private val translator: Translator
 ) : ViewModel() {
     private val TAG = "MainViewModel"
 
-    data class Query(
-        val name: String = "",
-        val status: String? = null,
-        val species: String = "",
-        val type: String = "",
-        val gender: String? = null
-    )
-
-    private val _query = MutableStateFlow(Query())
-    val query = _query.asStateFlow()
-
-    fun updateName(name: String) = updateQuery { this.copy(name = name) }
-    fun updateStatus(status: String?) = updateQuery { this.copy(status = status) }
-    fun updateSpecies(species: String) = updateQuery { this.copy(species = species) }
-    fun updateType(type: String) = updateQuery { this.copy(type = type) }
-    fun updateGender(gender: String?) = updateQuery { this.copy(gender = gender) }
-
-    private fun updateQuery(transform: Query.() -> Query) {
-        _query.value = _query.value.transform()
-    }
+    val query = backArgumentHolder.query
 
 
     @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
-    val characters: Flow<PagingData<Character>> = _query
+    val characters: Flow<PagingData<Character>> = query
         .debounce(300)
         .distinctUntilChanged()
         .flatMapLatest { query ->
@@ -63,10 +46,10 @@ class MainViewModel @Inject constructor(
                         repo.getCharacters(
                             page = page,
                             name = query.name.ifBlank { null },
-                            status = query.status,
-                            species = query.species.ifBlank { null },
-                            type = query.type.ifBlank { null },
-                            gender = query.gender
+                            status = translator.translate(query.status).ifBlank { null },
+                            species = translator.translate(query.species).ifBlank { null },
+                            type = translator.translate(query.type).ifBlank { null },
+                            gender = translator.translate(query.gender).ifBlank { null }
                         )
                     }
                 }

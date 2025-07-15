@@ -32,8 +32,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.nezuko.data.model.Character
 import com.nezuko.data.source.LocationInfo
-import com.nezuko.ui.Image
-import com.nezuko.ui.Spacing
+import com.nezuko.ui.components.Image
+import com.nezuko.ui.theme.Spacing
 
 private val TAG = "CharacterCard"
 
@@ -96,7 +96,7 @@ fun CharacterCard(
 
         Column(
             modifier = Modifier
-                .padding(vertical = Spacing.small)
+                .padding(Spacing.small)
                 .fillMaxWidth(),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,

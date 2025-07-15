@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.nezuko.data.model.Character
 import com.nezuko.data.model.ResultModel
 import com.nezuko.data.repository.RickAndMortyRepository
+import com.nezuko.data.source.Translator
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

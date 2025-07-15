@@ -33,6 +33,7 @@ pagingCompose = "3.3.6"
 robolectric = "4.15.1"
 room = "2.7.2"
 runner = "1.6.2"
+translate = "17.0.3"
 turbine = "1.2.1"
 junitKtx = "1.2.1"
 
@@ -87,6 +88,7 @@ room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
 
 mockito-kotlin = { module = "org.mockito.kotlin:mockito-kotlin", version.ref = "mockitoKotlin" }
+translate = { module = "com.google.mlkit:translate", version.ref = "translate" }
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 androidx-junit-ktx = { group = "androidx.test.ext", name = "junit-ktx", version.ref = "junitKtx" }
 

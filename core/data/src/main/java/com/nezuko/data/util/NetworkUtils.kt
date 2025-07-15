@@ -9,6 +9,9 @@ import io.ktor.client.plugins.ServerResponseException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.TimeoutCancellationException
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
 import java.io.IOException
 
@@ -26,6 +29,21 @@ suspend fun <T> safeRequest(
         ResultModel.failure(mapError(e))
     }
 }
+
+fun <T> safeFlow(
+    dispatcher: CoroutineDispatcher = Dispatchers.IO,
+    request: suspend () -> T
+): Flow<ResultModel<T>> = flow {
+    try {
+        val response = request()
+        emit(ResultModel.success(response))
+
+    } catch (e: EmptyResultException) {
+        emit(ResultModel.failure(e))
+    } catch (e: Exception) {
+        emit(ResultModel.failure(mapError(e)))
+    }
+}.flowOn(dispatcher)
 
 private fun mapError(e: Throwable): Exception {
     return when (e) {

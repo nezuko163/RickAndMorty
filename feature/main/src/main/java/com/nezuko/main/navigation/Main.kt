@@ -15,8 +15,9 @@ fun NavController.navigateToMain(
 ) = navigate(Main, navOptions)
 
 fun NavGraphBuilder.mainScreen(
-    navigateToDetails: (Int) -> Unit
+    navigateToDetails: (Int) -> Unit,
+    navigateToSearch: () -> Unit,
 ) = composable<Main>(
 ) { backStackEntry ->
-    MainRoute(navigateToDetails = navigateToDetails)
+    MainRoute(navigateToDetails = navigateToDetails, navigateToSearch = navigateToSearch)
 }

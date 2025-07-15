@@ -1,8 +1,9 @@
 package com.nezuko.details
 
-import android.util.Log
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
@@ -22,13 +23,18 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import com.nezuko.data.model.Character
-import com.nezuko.ui.Image
+import com.nezuko.data.util.formatDateTime
+import com.nezuko.ui.components.Image
+import com.nezuko.ui.theme.Spacing
 
 private val TAG = "DetailsScreen"
 
@@ -37,14 +43,22 @@ private val TAG = "DetailsScreen"
 fun DetailsScreen(
     character: Character,
     modifier: Modifier = Modifier,
-    onBackClick: () -> Unit = {}
+    onBackClick: () -> Unit = {},
 ) {
+    val uriHandle = LocalUriHandler.current
+
     Scaffold(
         modifier = modifier
             .fillMaxSize(),
         topBar = {
             TopAppBar(
-                title = {},
+                title = {
+                    Text(
+                        text = character.name,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+                },
                 navigationIcon = {
                     IconButton(onBackClick) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, "Назад")
@@ -69,17 +83,16 @@ fun DetailsScreen(
             )
 
             Column(modifier = Modifier.padding(16.dp)) {
-                InfoRow(label = "Status", value = character.status)
-                InfoRow(label = "Species", value = character.species)
-                InfoRow(label = "Type", value = character.type)
-                InfoRow(label = "Gender", value = character.gender)
-                InfoRow(label = "Origin", value = character.origin.name)
-                InfoRow(label = "Location", value = character.location.name)
+                InfoRow(label = "Статус", value = character.status, character.color)
+                InfoRow(label = "Вид", value = character.species)
+                InfoRow(label = "Тип", value = character.gender)
+                InfoRow(label = "Происхождение", value = character.origin.name)
+                InfoRow(label = "Локация", value = character.location.name)
 
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Text(
-                    text = "Episodes",
+                    text = "Эпизоды",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
@@ -87,20 +100,15 @@ fun DetailsScreen(
                 Spacer(modifier = Modifier.height(8.dp))
 
 
-                character.episode.forEach { episodeUrl ->
-                    Log.i(TAG, "DetailsScreen: ")
-                    Text(
-                        text = episodeUrl,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.padding(vertical = 2.dp)
-                    )
+                EpisodesString(char = character) {
+                    uriHandle.openUri(it)
                 }
+
 
                 Spacer(modifier = Modifier.height(24.dp))
 
                 Text(
-                    text = "Created: ${character.created}",
+                    text = "Created: ${formatDateTime(character.created)}",
                     style = MaterialTheme.typography.bodySmall,
                     color = Color.Gray
                 )
@@ -111,7 +119,15 @@ fun DetailsScreen(
 
 
 @Composable
-private fun InfoRow(label: String, value: String) {
+private fun InfoRow(label: String, value: String, valueColor: Character.StatusColor? = null) {
+    val statusColor = remember(valueColor) {
+        when (valueColor) {
+            Character.StatusColor.ALIVE -> Color(0xFF4CAF50)
+            Character.StatusColor.DEAD -> Color(0xFFF44336)
+            null -> Color.Black
+            else -> Color.Gray
+        }
+    }
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -126,7 +142,34 @@ private fun InfoRow(label: String, value: String) {
         Text(
             text = value,
             style = MaterialTheme.typography.bodyMedium,
-            fontWeight = FontWeight.Medium
+            fontWeight = FontWeight.Medium,
+            color = statusColor
         )
+    }
+}
+
+@Composable
+fun EpisodesString(
+    modifier: Modifier = Modifier,
+    char: Character,
+    onItemClick: (String) -> Unit
+) {
+    FlowRow(
+        modifier = modifier.padding(Spacing.medium),
+    ) {
+        char.episode.forEachIndexed { index, item ->
+            Text(
+                text = char.episodesNumbers[index],
+                style = MaterialTheme.typography.bodyLarge.copy(
+                    textDecoration = TextDecoration.Underline
+                ),
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier
+                    .clickable {
+                        onItemClick(item)
+                    }
+                    .padding(vertical = 8.dp, horizontal = 16.dp)
+            )
+        }
     }
 }

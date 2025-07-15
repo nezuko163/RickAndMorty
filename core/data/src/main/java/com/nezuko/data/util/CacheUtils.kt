@@ -35,7 +35,7 @@ fun <T> safeRoomFlow(
 suspend fun <T> networkQueryWithCache(
     queryCache: suspend () -> ResultModel<T>,
     fetchNetwork: suspend () -> ResultModel<T>,
-    saveFetch: suspend (T) -> Unit,
+    saveFetch: suspend (T) -> Unit = {},
     isCacheFirst: Boolean = false
 ): ResultModel<T> = withContext(Dispatchers.IO) {
     val firstResult = if (isCacheFirst) {

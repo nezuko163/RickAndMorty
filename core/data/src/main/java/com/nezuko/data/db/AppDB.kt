@@ -6,7 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 
-@Database(entities = [CharacterEntity::class], version = 2, exportSchema = false)
+@Database(entities = [CharacterEntity::class], version = 3, exportSchema = false)
 @TypeConverters(Converters::class)
 abstract class AppDB : RoomDatabase() {
     abstract fun characterDao(): CharacterDao

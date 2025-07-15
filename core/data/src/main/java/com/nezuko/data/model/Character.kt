@@ -19,12 +19,23 @@ data class Character(
     val created: String
 ) {
     val color = when (status.lowercase()) {
-        "alive" -> StatusColor.ALIVE
-        "dead" -> StatusColor.DEAD
+        "alive", "живой" -> StatusColor.ALIVE
+        "dead", "мёртвый" -> StatusColor.DEAD
         else -> StatusColor.ELSE
     }
 
     enum class StatusColor {
         ALIVE, DEAD, ELSE
     }
+
+    val episodesNumbers = episode.map { it.substringAfterLast("/") }
+
+    fun translate(translate: (String) -> String) = this.copy(
+        status = translate(status),
+        species = translate(species),
+        type = translate(type),
+        gender = translate(gender),
+        origin = origin.copy(name = translate(name)),
+        location = location.copy(name = translate(name))
+    )
 }

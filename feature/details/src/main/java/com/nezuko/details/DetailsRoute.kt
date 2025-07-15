@@ -2,6 +2,7 @@ package com.nezuko.details
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -14,7 +15,7 @@ fun DetailsRoute(
     onNavigateBack: () -> Unit,
     vm: DetailsViewModel = hiltViewModel()
 ) {
-    vm.load(id)
+    LaunchedEffect(Unit) { vm.load(id) }
     val character by vm.details.collectAsState()
     BackHandler {
         onNavigateBack()

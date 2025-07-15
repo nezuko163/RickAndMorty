@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.android.hilt)
     alias(libs.plugins.serialization)
+    id("kotlin-parcelize")
 }
 
 android {
@@ -70,7 +71,6 @@ dependencies {
     implementation(libs.ktor.client.core)
     implementation(libs.ktor.client.json)
     implementation(libs.ktor.client.serialization)
-
 
     implementation(libs.room.runtime)
     implementation(libs.androidx.room.paging)

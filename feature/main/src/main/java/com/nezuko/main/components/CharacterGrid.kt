@@ -1,12 +1,10 @@
 package com.nezuko.main.components
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -30,8 +28,9 @@ import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.itemKey
+import com.nezuko.data.exceptions.EmptyResultException
 import com.nezuko.data.model.Character
-import com.nezuko.ui.Spacing
+import com.nezuko.ui.theme.Spacing
 
 private val TAG = "CharacterGrid"
 
@@ -40,22 +39,24 @@ private val TAG = "CharacterGrid"
 fun CharacterGrid(
     modifier: Modifier = Modifier,
     characters: LazyPagingItems<Character>,
-    onCardClick: (Int) -> Unit,
-    onRefresh: () -> Unit = {}
+    onCardClick: (Int) -> Unit
 ) {
     val refreshing = characters.loadState.refresh is LoadState.Loading
-    val state = rememberPullToRefreshState()
+    val pullState = rememberPullToRefreshState()
+
+    val refreshState = characters.loadState.refresh
+    val isEmptyError =
+        refreshState is LoadState.Error && refreshState.error is EmptyResultException
+
     PullToRefreshBox(
-        state = state,
+        state = pullState,
         modifier = modifier,
         isRefreshing = refreshing,
-        onRefresh = {
-            characters.refresh()
-        },
+        onRefresh = { characters.refresh() },
         indicator = {
             Indicator(
                 modifier = Modifier.align(Alignment.TopCenter),
-                state = state,
+                state = pullState,
                 isRefreshing = refreshing,
                 color = Color.Cyan,
                 containerColor = Color.White
@@ -64,14 +65,14 @@ fun CharacterGrid(
     ) {
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
-            contentPadding = PaddingValues(horizontal = Spacing.large),
+            contentPadding = PaddingValues(
+                horizontal = Spacing.large,
+                vertical = Spacing.medium
+            ),
             horizontalArrangement = Arrangement.spacedBy(Spacing.medium),
             verticalArrangement = Arrangement.spacedBy(Spacing.medium)
         ) {
-            Log.i(TAG, "CharacterGrid: ${characters.loadState}")
-            if (characters.itemCount == 0
-                && characters.loadState.refresh is LoadState.Error
-            ) {
+            if (isEmptyError) {
                 item(span = { GridItemSpan(maxLineSpan) }) {
                     Box(
                         modifier = Modifier
@@ -86,12 +87,13 @@ fun CharacterGrid(
                         )
                     }
                 }
+                return@LazyVerticalGrid
             }
 
-            if (characters.loadState.refresh is LoadState.Loading) {
+            if (refreshState is LoadState.Loading) {
                 item(span = { GridItemSpan(maxLineSpan) }) {
                     Box(
-                        Modifier
+                        modifier = Modifier
                             .fillMaxWidth()
                             .padding(vertical = Spacing.large),
                         contentAlignment = Alignment.Center
@@ -116,7 +118,7 @@ fun CharacterGrid(
             if (characters.loadState.append is LoadState.Loading) {
                 item(span = { GridItemSpan(maxLineSpan) }) {
                     Box(
-                        Modifier
+                        modifier = Modifier
                             .fillMaxWidth()
                             .padding(vertical = Spacing.medium),
                         contentAlignment = Alignment.Center
@@ -129,20 +131,24 @@ fun CharacterGrid(
                 }
             }
 
-            val errorState = characters.loadState.refresh as? LoadState.Error
-                ?: characters.loadState.append as? LoadState.Error
-            errorState?.let { state ->
-                item(span = { GridItemSpan(maxLineSpan) }) {
-                    Column(
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(Spacing.large),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text("Ошибка загрузки: ${state.error.localizedMessage}", color = Color.Red)
-                        Spacer(Modifier.height(Spacing.small))
-                        Button(onClick = { characters.retry() }) {
-                            Text("Повторить")
+            val appendErrorState = characters.loadState.append as? LoadState.Error
+            appendErrorState?.let { state ->
+                if (state.error !is EmptyResultException) {
+                    item(span = { GridItemSpan(maxLineSpan) }) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(Spacing.large),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(
+                                text = "Ошибка загрузки: ${state.error.localizedMessage}",
+                                color = Color.Red
+                            )
+                            Spacer(modifier = Modifier.height(Spacing.small))
+                            Button(onClick = { characters.retry() }) {
+                                Text("Повторить")
+                            }
                         }
                     }
                 }

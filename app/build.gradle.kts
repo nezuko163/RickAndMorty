@@ -50,6 +50,7 @@ dependencies {
     implementation(project(":core:ui"))
     implementation(project(":feature:main"))
     implementation(project(":feature:details"))
+    implementation(project(":feature:search"))
 
     implementation(libs.hilt.android)
 //    implementation(libs.androidx.ui.tooling.preview.android)
