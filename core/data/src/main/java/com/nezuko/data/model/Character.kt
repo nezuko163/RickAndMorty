@@ -35,7 +35,7 @@ data class Character(
         species = translate(species),
         type = translate(type),
         gender = translate(gender),
-        origin = origin.copy(name = translate(name)),
-        location = location.copy(name = translate(name))
+        origin = origin.copy(name = translate(origin.name)),
+        location = location.copy(name = translate(location.name))
     )
 }

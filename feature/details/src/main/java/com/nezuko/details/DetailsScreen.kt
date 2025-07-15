@@ -3,7 +3,6 @@ package com.nezuko.details
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
@@ -108,7 +107,7 @@ fun DetailsScreen(
                 Spacer(modifier = Modifier.height(24.dp))
 
                 Text(
-                    text = "Created: ${formatDateTime(character.created)}",
+                    text = "Создан: ${formatDateTime(character.created)}",
                     style = MaterialTheme.typography.bodySmall,
                     color = Color.Gray
                 )
@@ -154,9 +153,7 @@ fun EpisodesString(
     char: Character,
     onItemClick: (String) -> Unit
 ) {
-    FlowRow(
-        modifier = modifier.padding(Spacing.medium),
-    ) {
+    Column(modifier.padding(Spacing.small)) {
         char.episode.forEachIndexed { index, item ->
             Text(
                 text = char.episodesNumbers[index],
@@ -165,10 +162,10 @@ fun EpisodesString(
                 ),
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier
+                    .padding(Spacing.tiny)
                     .clickable {
                         onItemClick(item)
                     }
-                    .padding(vertical = 8.dp, horizontal = 16.dp)
             )
         }
     }

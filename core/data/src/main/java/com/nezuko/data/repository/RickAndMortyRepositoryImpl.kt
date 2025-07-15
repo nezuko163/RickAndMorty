@@ -58,8 +58,7 @@ class RickAndMortyRepositoryImpl @Inject constructor(
                 isCacheFirst = true
             )
             if (a is ResultModel.Success) {
-                emit(value = a.copy(a.data.translate(translator::translate).also {
-                }))
+                emit(value = a.copy(a.data.translate(translator::translate)))
             } else {
                 emit(a)
             }
